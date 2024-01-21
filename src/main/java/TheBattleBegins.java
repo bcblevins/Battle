@@ -11,10 +11,8 @@ public class TheBattleBegins {
     public static boolean isEnemyBlinded;
     public static boolean isSkipTurn;
 
-    public static boolean isEnemyAlive = true;
 
     //Player Stats
-    public static boolean isPlayerAlive = true;
     public static int playerHealth;
     public static String playerClass;
     public static Map<String, Integer> playerSpells;
@@ -32,12 +30,16 @@ public class TheBattleBegins {
 
     //Housekeeping
     public static Scanner input = new Scanner(System.in);
-    public static String globalCommands = "commands: show this command list\n" +
+    public static String globalCommands = "" +
+            "commands: show this command list\n" +
             "inventory: display inventory\n" +
             "attacks: displays attacks list(if applicable)\n" +
             "spells: displays spell list(if applicable)\n" +
             "status: displays character stats\n" +
             "use: use something from your inventory";
+    public static String separator = "" +
+            "------------------------------------\n" +
+            "------------------------------------";
 
 
     public static void main(String[] args){
@@ -50,6 +52,7 @@ public class TheBattleBegins {
         while (true) {
             System.out.println(">");
             String classChoice = input.nextLine();
+
             if (classChoice.equals("1")) {
                 currentClass = mage;
                 break;
@@ -72,10 +75,7 @@ public class TheBattleBegins {
         playerMana = currentClass.Mana;
         playerInventory = currentClass.Inventory;
 
-
         //Output current class.
-        String separator = "------------------------------------\n" +
-                "------------------------------------";
         System.out.println("====================================");
         System.out.println(playerClass);
         System.out.println(separator);
@@ -101,10 +101,11 @@ public class TheBattleBegins {
         }
         System.out.println("Starting Health: " + playerHealth);
 
+        //This function just waits for the user to hit enter before proceeding so they have time to read outputs. Defined below.
         waitForUser();
         System.out.println(separator);
 
-        //Set up premise of game
+        //Set up story of game
         System.out.println(">You are traveling through the woods on your way into town. You notice a cart crashed on the \n" +
                 "side of the road. As you approach, you hear someone shouting for help from inside the cart.");
         System.out.println("Do you:");
@@ -112,14 +113,17 @@ public class TheBattleBegins {
         System.out.println("2. Mind your business");
         System.out.println(">");
 
+        //Quit if player does not approach cart.
         String userAmbushInput = input.nextLine();
         if (userAmbushInput.equals("2")) {
             System.out.println(">Who are you to help in that situation anyway? Best to mind your business. You make it \n" +
                     "into town safely, only partially laden with guilt.");
             return;
         }
+
         System.out.println(separator);
 
+        //Bandit attacks if you do not ignore the cries for help.
         System.out.println(">You run over to the cart like the caring person that you are, only to find no one inside.");
         System.out.println("Suddenly, a bandit jumps out from the brush and shouts \"Empty your pockets!\"");
 
@@ -127,10 +131,11 @@ public class TheBattleBegins {
 
         System.out.println(separator);
 
+        //Explain commands
         System.out.println("Enter a command when prompted by '>'");
         System.out.println();
         System.out.println("Global Commands:");
-        System.out.println(globalCommands);
+        System.out.println(globalCommands); //defined above
         System.out.println();
         System.out.println("To use a spell or attack, enter it when prompted for a command.");
 
@@ -153,22 +158,30 @@ public class TheBattleBegins {
          */
         while(playerHealth > 0 && enemyHealth > 0) {
             System.out.println(separator);
+
+            //Makes player take bleeding damage if bleeding, unless a global command was used this round.
+            //(Global commands do not count as a turn)
             if(isPlayerBleeding && !isGlobalCommandUsed) {
                 System.out.println("You are bleeding. You take 2pts bleeding damage.");
+                playerHealth -= 2;
             }
+
+            //This function creates the enemy's turn. Defined below.
             enemyTurn();
 
-            //Skip this if global command used to keep terminal from clogging up
+            //Prints user and enemy health. Skip this if global command used to keep terminal from clogging up.
             if (!isGlobalCommandUsed) {
                 System.out.println("Enemy health: " + enemyHealth);
                 System.out.println("Player health: " + playerHealth);
             }
             System.out.println();
+
+            //Take user command and see if they used a global command first (since global command does not count as turn)
             System.out.println(">");
             command = input.nextLine();
+            processGlobalCommands(); //Defined below
 
-            processGlobalCommands();
-
+            //If global command wasn't used, process command based on character class. All class command function defined below.
             if (!isGlobalCommandUsed) {
                 if (playerClass.equals("Mage")) {
                     processMageCommands();
@@ -178,20 +191,24 @@ public class TheBattleBegins {
                     processArcherCommands();
                 }
             }
-            //only wait for user if a normal command is used, so they can read about what their turn did.
+
+            //Only wait for user if a turn (non-global) command is used, so they can read about what their turn did before proceeding.
             if (!isGlobalCommandUsed) {
                 waitForUser();
             }
 
+        //This loop will repeat as long as user and enemy healths are above zero.
         }
 
+        //Ending if player loses
         if (playerHealth < 0) {
             System.out.println("The bandit runs his sword through your chest. You fall to the ground, the last thing you\n" +
                     " see is the bandit going through your things and escaping.");
             System.out.println();
             System.out.println("YOU LOSE");
-        }
-        else {
+
+        } else {
+        //Finishing attack if player wins, depends on character class.
             System.out.println(separator);
             if (playerClass.equals("Mage")) {
                 System.out.println(">You reach your arms to the sky and concentrate your energy on the ground beneath the\n" +
@@ -206,6 +223,8 @@ public class TheBattleBegins {
                         "arrow into his neck and step to the side as flies past.");
             }
         }
+
+        //Winning ending
         System.out.println();
         System.out.println(">You leave the bandit to his fate and make your way into town and you notice wanted signs\n" +
                 "posted everywhere. Looks like there was a bounty on the bandit's head. You bring proof of his demise to\n" +
@@ -217,11 +236,82 @@ public class TheBattleBegins {
 
     }
 
-    //This function gives the user time to read previous lines
+    /*
+    ALL FUNCTIONS DEFINED UNDER THIS
+    --------------------------------
+    --------------------------------
+    --------------------------------
+     */
+
     public static void waitForUser() {
         System.out.println();
         System.out.println("When you are ready to proceed, hit enter.");
         String proceed = input.nextLine();
+    }
+
+    //Creates enemy turn
+    public static void enemyTurn() {
+
+        //isSkipTurn is true if hit by fireball (mage). Also skips enemy turn if global command used.
+        if (!isSkipTurn && !isGlobalCommandUsed) {
+
+            //Enemy blinded by smoke bomb (swordsman) gets turn skipped. Not handled above so that we can output something
+            //specific about it.
+            if (isEnemyBlinded) {
+                System.out.println(">The bandit is blinded and cannot attack");
+                isEnemyBlinded = false;
+                return;
+            }
+
+            //Randomly generates enemy attack - defined just below.
+            String currentEnemyAttack = randomAttack();
+            if (currentEnemyAttack.equals("Slash")) {
+                System.out.println(">The bandit slashes at you with his sword. You take 15 points damage.");
+                playerHealth -= 15;
+            } else if (currentEnemyAttack.equals("Stab")) {
+                System.out.println(">The bandit stabs you with his sword. You take 10 points damage. You are bleeding.");
+                playerHealth -= 10;
+                isPlayerBleeding = true;
+            }
+            //Fireball (mage) only skips one round, so reset to false each time the enemy takes a turn.
+            isSkipTurn = false;
+        }
+
+        //Damage enemy if bleeding (swordsman), poisoned (archer), or on fire (mage). Skip if global command used.
+        if (!isGlobalCommandUsed) {
+            if (isEnemyPoisoned) {
+                System.out.println("The bandit is poisoned and takes 3pts poison damage.");
+                enemyHealth -= 3;
+            } else if (isEnemyBleeding) {
+                System.out.println("The bandit is bleeding and takes 2pt bleeding damage.");
+                enemyHealth -= 2;
+            } else if (isEnemyOnFire) {
+                System.out.println("The bandit is on fire and takes 5 pts fire damage. He takes his turn to put himself out");
+                enemyHealth -= 5;
+                isEnemyOnFire = false;
+            }
+        }
+    }
+
+    //Random attack generator for enemy.
+    public static String randomAttack(){
+        //get random number
+        Random rand = new Random();
+        int randomNumber = rand.nextInt(10);
+
+        //List of random attacks (same as swordsman)
+        String[] enemyAttacks = {"Slash", "Stab"};
+
+        //Weight random number to make slash happen more often than stab.
+        int weightedNumber;
+        if (randomNumber > 1) {
+            weightedNumber = 0;
+        } else {
+            weightedNumber = 1;
+        }
+
+        //get random attack
+        return enemyAttacks[weightedNumber];
     }
 
     //This function processes global commands, unless it is a "use" command in which case it calls the processUseCommand function.
@@ -256,6 +346,7 @@ public class TheBattleBegins {
                 System.out.println("Your Mana: " + playerMana);
             }
         } else if (command.equals("use")) {
+            //Defined just below
             processUseCommand();
         } else {
             isGlobalCommandUsed = false;
@@ -263,12 +354,15 @@ public class TheBattleBegins {
     }
 
     public static void processUseCommand() {
+        //Take input for item to use
         System.out.println("What would you like to use?");
         String useItem = input.nextLine();
 
-        if (currentClass.Inventory.containsKey(useItem)){
+        //Checks if player has item they are asking to use.
+        if (playerInventory.containsKey(useItem)){
             int numberOfUseItems = playerInventory.get(useItem);
 
+            //Doesn't let player use item if they don't have any left, otherwise uses the item.
             if (numberOfUseItems < 1) {
                 System.out.println("You don't have any left");
                 return;
@@ -287,9 +381,13 @@ public class TheBattleBegins {
                 System.out.println("You drink a mana potion and regain 30 mana");
 
             } else if (useItem.equals("Smoke Bomb")) {
-                isEnemyBlinded = true;
                 playerInventory.put(useItem, numberOfUseItems - 1);
+
+                isEnemyBlinded = true;
+
                 System.out.println("You throw a smoke bomb at the bandit, blinding him.");
+
+            //Archers arrows are stored in inventory, but are used in attacks. They cannot be used as an inventory item.
             } else if (useItem.equals("Normal Arrows") || useItem.equals("Poison Arrows")) {
                 System.out.println("These aren't used this way, try using their attack instead.");
             }
@@ -297,39 +395,7 @@ public class TheBattleBegins {
     }
 
 
-    public static void enemyTurn() {
-        if (!isSkipTurn && !isGlobalCommandUsed) {
-            if (isEnemyBlinded) {
-                System.out.println(">The bandit is blinded and cannot attack");
-                isEnemyBlinded = false;
-                return;
-            }
-            String currentEnemyAttack = randomAttack();
-            if (currentEnemyAttack.equals("Slash")) {
-                System.out.println(">The bandit slashes at you with his sword. You take 15 points damage.");
-                playerHealth -= 15;
-            } else if (currentEnemyAttack.equals("Stab")) {
-                System.out.println(">The bandit stabs you with his sword. You take 10 points damage. You are bleeding.");
-                playerHealth -= 10;
-                isPlayerBleeding = true;
-            }
-            isSkipTurn = false;
-        }
 
-        if (isEnemyPoisoned && !isGlobalCommandUsed) {
-            System.out.println("The bandit is poisoned and takes 3pts poison damage.");
-            enemyHealth -= 3;
-        } else if( isEnemyBleeding) {
-            System.out.println("The bandit is bleeding and takes 2pt bleeding damage.");
-            enemyHealth -=2 ;
-        } else if (isEnemyOnFire) {
-            System.out.println("The bandit is on fire and takes 5 pts fire damage. He takes his turn to put himself out");
-            enemyHealth -= 5;
-            isEnemyOnFire = false;
-        }
-
-        isSkipTurn = false;
-    }
 
 
     public static void processMageCommands(){
@@ -388,25 +454,7 @@ public class TheBattleBegins {
 
     }
 
-    public static String randomAttack(){
-        //get random number
-        Random rand = new Random();
-        int randomNumber = rand.nextInt(10);
 
-        //List of random attacks (same as swordsman)
-        String[] enemyAttacks = {"Slash", "Stab"};
-
-        //Weight random number to make slash happen more often than stab.
-        int weightedNumber;
-        if (randomNumber > 2) {
-            weightedNumber = 0;
-        } else {
-            weightedNumber = 1;
-        }
-
-        //get random attack
-        return enemyAttacks[weightedNumber];
-    }
 }
 
 
