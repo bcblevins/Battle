@@ -273,8 +273,7 @@ public class TheBattleBegins {
                 playerHealth -= 10;
                 isPlayerBleeding = true;
             }
-            //Fireball (mage) only skips one round, so reset to false each time the enemy takes a turn.
-            isSkipTurn = false;
+
         }
 
         //Damage enemy if bleeding (swordsman), poisoned (archer), or on fire (mage). Skip if global command used.
@@ -291,6 +290,9 @@ public class TheBattleBegins {
                 isEnemyOnFire = false;
             }
         }
+
+        //Fireball (mage) only skips one round, so reset to false each time the enemy takes a turn.
+        isSkipTurn = false;
     }
 
     //Random attack generator for enemy.
