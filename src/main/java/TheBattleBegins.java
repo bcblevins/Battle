@@ -2,19 +2,34 @@ import java.util.*;
 
 public class TheBattleBegins {
     public static String command;
+
+    //Enemy stats
     public static int enemyHealth = 100;
     public static boolean isEnemyOnFire;
     public static boolean isEnemyBleeding;
     public static boolean isEnemyPoisoned;
     public static boolean isEnemySmokeBombed;
+    public static boolean isSkipTurn;
 
     public static boolean isEnemyAlive = true;
+
+    //Player Stats
     public static boolean isPlayerAlive = true;
+    public static int playerHealth;
+    public static String playerClass;
+    public static Map<String, Integer> playerSpells;
+    public static Set<String> playerAttacks;
+    public static int playerMana;
+    public static boolean isPlayerBleeding;
+    public static boolean isGlobalCommandUsed;
+
+    //Initialize character classes
+    public static CharacterClass currentClass;
     public static ArcherClass archer = new ArcherClass();
     public static SwordClass swordsman = new SwordClass();
     public static MageClass mage = new MageClass();
-    public static CharacterClass currentClass;
-    public static int playerHealth;
+
+    //Housekeeping
     public static Scanner input = new Scanner(System.in);
     public static String globalCommands = "commands: show this command list\n" +
             "inventory: display inventory\n" +
@@ -30,7 +45,7 @@ public class TheBattleBegins {
         System.out.println("2. Swordsman");
         System.out.println("3. Archer");
 
-        //Ask for character class in loop so that if invalid input is entered, they are given another try.
+        //Take character class in loop so that if invalid input is entered, they are given another try.
         while (true) {
             System.out.println(">");
             String classChoice = input.nextLine();
@@ -48,31 +63,41 @@ public class TheBattleBegins {
             }
         }
 
+        //Gets class's specific starting info and updates local variables
         playerHealth = currentClass.StartingHealth;
+        playerClass = currentClass.Name;
+        playerSpells = currentClass.SpellList;
+        playerAttacks = currentClass.AttackList;
+        playerMana = currentClass.Mana;
+
 
         //Output current class.
         String separator = "------------------------------------";
         System.out.println("====================================");
-        System.out.println(currentClass.Name);
+        System.out.println(playerClass);
         System.out.println(separator);
 
 
         //Inform user about class specific info.
-        if (currentClass.Name.equals("Mage")) {
-            System.out.println("Each spell the Mage casts will cost Mana. You can check how much mana you have at any \n" +
-                    "time using the 'status' command.");
-        } else if (currentClass.Name.equals("Swordsman")) {
-            System.out.println("Swing sword. Enemy says 'Ouch!'. Pretty simple.");
-        } else if (currentClass.Name.equals("Archer")) {
-            System.out.println("You only have a certain number of each type of arrow. You can check how many arrows you \n" +
-                    "have at any time using the 'inventory' command.");
+        if (playerClass.equals("Mage")) {
+            System.out.println("Description: Each spell the Mage casts will cost Mana. You can check how much mana you \n" +
+                    "have at any time using the 'status' command.");
+            System.out.println("Starting Mana: " + playerMana);
+
+        } else if (playerClass.equals("Swordsman")) {
+            System.out.println("Description: Swing sword. Enemy says 'Ouch!'. Pretty simple.");
+
+        } else if (playerClass.equals("Archer")) {
+            System.out.println("Description: You only have a certain number of each type of arrow. You can check how \n" +
+                    "many arrows you have at any time using the 'inventory' command.");
+
         } else {
             System.out.println("Something went wrong when assigning or when evaluating class");
         }
+        System.out.println("Starting Health: " + playerHealth);
+
         waitForUser();
         System.out.println(separator);
-
-        //We will reference this whenever we want to give the user time to read.
 
         //Set up premise of game
         System.out.println("You are traveling through the woods on your way into town. You notice a cart crashed on the \n" +
@@ -104,6 +129,8 @@ public class TheBattleBegins {
         System.out.println();
         System.out.println("To use a spell or attack, enter it when prompted for a command.");
 
+        waitForUser();
+
         System.out.println("                   \n" +
                 "..=====..|...===...|...|..=====..\n" +
                 "..|......|../...\\..|...|....|....\n" +
@@ -111,26 +138,55 @@ public class TheBattleBegins {
                 "..|......|..|...==.|...|....|....\n" +
                 "..|......|..\\===/..|...|....|....");
 
+        /*
+        MAIN COMMANDS LOOP
+        --------------------------------------------------------------------
+        --------------------------------------------------------------------
+        --------------------------------------------------------------------
+         */
         while(isEnemyAlive && isPlayerAlive) {
-            System.out.println("Enemy health: " + enemyHealth);
+            System.out.println(separator);
+            if(isPlayerBleeding && !isGlobalCommandUsed) {
+                System.out.println("You are bleeding. You take 2pts bleeding damage.");
+            }
+            enemyTurn();
+
+            //Skip this if global command used to keep terminal from clogging up
+            if (!isGlobalCommandUsed) {
+                System.out.println("Enemy health: " + enemyHealth);
+                System.out.println("Player health: " + playerHealth);
+            }
+            System.out.println();
             System.out.println(">");
             command = input.nextLine();
 
             processGlobalCommands();
 
-
-
+            if (!isGlobalCommandUsed) {
+                if (playerClass.equals("Mage")) {
+                    processMageCommands();
+                } else if (playerClass.equals("Swordsman")) {
+                    processSwordsmanCommands();
+                } else if (playerClass.equals("Archer")) {
+                    processArcherCommands();
+                }
+            }
 
         }
 
 
     }
+
+    //This function gives the user time to read previous lines
     public static void waitForUser() {
+        System.out.println();
         System.out.println("When you are ready to proceed, hit enter.");
         String proceed = input.nextLine();
     }
 
+    //This function processes global commands, unless it is a "use" command in which case it calls the processUseCommand function.
     public static void processGlobalCommands() {
+        isGlobalCommandUsed = true;
         if (command.equals("commands")) {
             System.out.println(globalCommands);
         } else if (command.equals("inventory")){
@@ -138,7 +194,7 @@ public class TheBattleBegins {
                 System.out.println(item.getKey() + ": " + item.getValue());
             }
         } else if (command.equals("attacks")) {
-            if (currentClass.Name.equals("Mage")) {
+            if (playerClass.equals("Mage")) {
                 System.out.println("Mages use spells");
                 return;
             } else {
@@ -147,7 +203,7 @@ public class TheBattleBegins {
                 }
             }
         } else if (command.equals("spells")) {
-            if (!currentClass.Name.equals("Mage")) {
+            if (!playerClass.equals("Mage")) {
                 System.out.println("You don't know any spells.");
             } else {
                 for (Map.Entry<String, Integer> spell : currentClass.SpellList.entrySet()) {
@@ -155,15 +211,49 @@ public class TheBattleBegins {
                 }
             }
         } else if (command.equals("status")) {
-            System.out.println(playerHealth);
-            if (currentClass.Name.equals("Mage")) {
-                System.out.println(currentClass.Mana);
+            System.out.println("Your Health: " + playerHealth);
+            if (playerClass.equals("Mage")) {
+                System.out.println("Your Mana: " + currentClass.Mana);
             }
         } else if (command.equals("use")) {
-            useCommand();
+            processUseCommand();
+        } else {
+            isGlobalCommandUsed = false;
         }
     }
-    public static void useCommand() {
+
+
+    public static void enemyTurn() {
+        if (!isSkipTurn && !isGlobalCommandUsed) {
+            String currentEnemyAttack = randomAttack();
+            if (currentEnemyAttack.equals("Slash")) {
+                System.out.println("The bandit slashes at you with his sword. You take 15 points damage.");
+                playerHealth -= 15;
+            } else if (currentEnemyAttack.equals("Stab")) {
+                System.out.println("The bandit stabs you with his sword. You take 10 points damage. You are bleeding.");
+                playerHealth -= 10;
+                isPlayerBleeding = true;
+            }
+            isSkipTurn = false;
+        }
+
+        if (isEnemyPoisoned) {
+            System.out.println("The bandit is poisoned and takes 2pts poison damage.");
+            enemyHealth -= 2;
+        } else if( isEnemyBleeding) {
+            System.out.println("The bandit is bleeding and takes 1pt bleeding damage.");
+            enemyHealth -=1 ;
+        } else if (isEnemyOnFire) {
+            System.out.println("The bandit is on fire and takes 5 pts fire damage. He takes his turn to put himself out");
+            enemyHealth -= 5;
+            isEnemyOnFire = false;
+        }
+
+        isSkipTurn = false;
+    }
+
+
+    public static void processUseCommand() {
         System.out.println("What would you like to use?");
         String useItem = input.nextLine();
 
@@ -189,6 +279,66 @@ public class TheBattleBegins {
         }
     }
 
+    public static void processMageCommands(){
+        playerMana -= 10;
+        if (command.equals("Fireball")) {
+            System.out.println("A fireball erupts from your palm and engulfs the bandit. He takes 8pts of damage. He is on fire.");
+            enemyHealth -= 8;
+            isEnemyOnFire = true;
+            return;
+        }else if(command.equals("Shock")) {
+            System.out.println("Bolts of electricity escape your fingertips and strike the bandit. He takes 18pts damage.");
+            enemyHealth -= 18;
+            return;
+        } else if (command.equals("Heal")){
+            System.out.println("You heal yourself 20 pts.");
+            playerHealth += 20;
+            return;
+        }
+    }
+
+    public static void processSwordsmanCommands() {
+        if (command.equals("Slash")) {
+            enemyHealth -= 15;
+            return;
+        } else if (command.equals("Stab")) {
+            enemyHealth -= 10;
+            isEnemyBleeding = true;
+            return;
+        }
+    }
+
+    public static void processArcherCommands() {
+        if (command.equals("Normal Arrow")) {
+            enemyHealth -= 18;
+            return;
+        } else if (command.equals("Poison Arrows")) {
+            enemyHealth -= 12;
+            isEnemyPoisoned = true;
+            return;
+        }
+
+    }
+
+    public static String randomAttack(){
+        //get random number
+        Random rand = new Random();
+        int randomNumber = rand.nextInt(10);
+
+        //List of random attacks (same as swordsman)
+        String[] enemyAttacks = {"Slash", "Stab"};
+
+        //Weight random number to make slash happen more often than stab.
+        int weightedNumber;
+        if (randomNumber > 2) {
+            weightedNumber = 0;
+        } else {
+            weightedNumber = 1;
+        }
+
+        //get random attack
+        return enemyAttacks[weightedNumber];
+    }
 }
 
 
