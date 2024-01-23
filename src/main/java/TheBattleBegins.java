@@ -176,7 +176,9 @@ public class TheBattleBegins {
                 enemyTurn();
 
                 //Every turn, display character and enemy status.
+                System.out.println();
                 System.out.println("Enemy health: " + enemyHealth);
+                System.out.println("----------------------------");
                 System.out.println("Player health: " + playerHealth);
                 if (playerClass.equals("Mage")) {
                     System.out.println("Player mana: " + playerMana);
@@ -376,7 +378,12 @@ public class TheBattleBegins {
     public static void processUseCommand() {
         //Take input for item to use
         System.out.println("What would you like to use?");
+        //display player inventory
+        for (Map.Entry<String, Integer> item : currentClass.Inventory.entrySet()) {
+            System.out.println(item.getKey() + ": " + item.getValue());
+        }
         String useItem = input.nextLine();
+        System.out.println();
 
         //Checks if player has item they are asking to use.
         if (playerInventory.containsKey(useItem)){
