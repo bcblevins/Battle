@@ -20,6 +20,8 @@ public class TheBattleBegins {
     public static Map<String, Integer> playerInventory;
     public static int playerMana;
     public static boolean isPlayerBleeding;
+    public static boolean isPlayerBlocking;
+    public static boolean isPlayerDodging;
     public static boolean isGlobalCommandUsed;
 
     //Initialize character classes
@@ -40,6 +42,9 @@ public class TheBattleBegins {
     public static String separator = "" +
             "------------------------------------\n" +
             "------------------------------------";
+    public static final String BLUE_ANSI_CODE = "\u001B[36m";
+    public static final String RED_ANSI_CODE = "\u001B[31m";
+    public static final String ANSI_RESET_CODE = "\u001B[0m";
 
 
     public static void main(String[] args){
@@ -85,14 +90,17 @@ public class TheBattleBegins {
         if (playerClass.equals("Mage")) {
             System.out.println(">Description: Each spell the Mage casts will cost Mana. You can check how much mana you \n" +
                     "have at any time using the 'status' command.");
+            System.out.println();
             System.out.println("Starting Mana: " + playerMana);
 
         } else if (playerClass.equals("Swordsman")) {
             System.out.println(">Description: Swing sword. Enemy says 'Ouch!'. Pretty simple.");
+            System.out.println();
 
         } else if (playerClass.equals("Archer")) {
             System.out.println(">Description: You only have a certain number of each type of arrow. You can check how \n" +
                     "many arrows you have at any time using the 'inventory' command.");
+            System.out.println();
 
         } else {
             System.out.println(">Something went wrong when assigning or when evaluating class");
@@ -103,6 +111,18 @@ public class TheBattleBegins {
 
         //This function waits for the user to hit enter before proceeding so they have time to read outputs. Defined below.
         waitForUser();
+
+        System.out.println(separator);
+
+        //Explain commands
+        System.out.println("Global Commands:");
+        System.out.println(globalCommands); //defined above
+        System.out.println();
+        System.out.println(BLUE_ANSI_CODE + "Enter a command when prompted by '>'" + ANSI_RESET_CODE);
+        System.out.println(BLUE_ANSI_CODE + "To use a spell or attack, enter its name when prompted for a command." + ANSI_RESET_CODE);
+
+        waitForUser();
+
         System.out.println(separator);
 
         //Set up story of game
@@ -129,17 +149,6 @@ public class TheBattleBegins {
 
         waitForUser();
 
-        System.out.println(separator);
-
-        //Explain commands
-        System.out.println("Enter a command when prompted by '>'");
-        System.out.println();
-        System.out.println("Global Commands:");
-        System.out.println(globalCommands); //defined above
-        System.out.println();
-        System.out.println("To use a spell or attack, enter it when prompted for a command.");
-
-        waitForUser();
 
         System.out.println("                   \n" +
                 "..=====..|...===...|...|..=====..\n" +
@@ -228,7 +237,7 @@ public class TheBattleBegins {
             System.out.println(separator);
             if (playerClass.equals("Mage")) {
                 System.out.println(">You reach your arms to the sky and concentrate your energy on the ground beneath the\n" +
-                        "bandit. The earth churns and swallows the bandit. As the ground settles, there remains no trace\n" +
+                        "bandit. The earth churns and swallows him whole. As the ground settles, there remains no trace\n" +
                         "of the bandit.");
             } else if (playerClass.equals("Swordsman")) {
                 System.out.println(">The bandit swings his sword at your head, but you expertly dodge the attack. You\n" +
@@ -236,7 +245,8 @@ public class TheBattleBegins {
                         "back.");
             } else if (playerClass.equals("Archer")) {
                 System.out.println(">The bandit as a last resort runs at you. As he raises his sword, you loose an \n" +
-                        "arrow into his neck and step to the side as flies past.");
+                        "arrow into his neck and step to the side as flies past. He collapses onto the ground, no longer\n" +
+                        "moving.");
             }
         }
 
@@ -245,7 +255,7 @@ public class TheBattleBegins {
         System.out.println(">You leave the bandit to his fate and make your way into town and you notice wanted signs\n" +
                 "posted everywhere. Looks like there was a bounty on the bandit's head. You bring proof of his demise to\n" +
                 "the local lord and are rewarded generously. From his list of crimes, it is safe to say you rid the \n" +
-                "world of an intense evil.");
+                "world of a great evil.");
         System.out.println();
         System.out.println("YOU WIN!!!");
 
@@ -262,15 +272,16 @@ public class TheBattleBegins {
     //Waits for user to press enter before proceeding, to allow time for reading.
     public static void waitForUser() {
         System.out.println();
-        System.out.println("When you are ready to proceed, hit enter.");
+        System.out.println(RED_ANSI_CODE + "When you are ready to proceed, hit enter." + ANSI_RESET_CODE);
         String proceed = input.nextLine();
     }
 
     //Creates enemy turn
     public static void enemyTurn() {
 
-        //Skip enemy's turn if on fire (Mage: Spell: Fireball) or blinded (Swordsman: Smoke Bomb: Inventory)
-        if (!isEnemyOnFire && !isEnemyBlinded) {
+        //Skip enemy's turn if on fire (Mage: Spell: Fireball) or blinded (Swordsman: Smoke Bomb: Inventory).
+        //Skip enemy's turn if player is Blocking (Swordsman) or Dodging (Archer).
+        if (!isEnemyOnFire && !isEnemyBlinded && !isPlayerBlocking && !isPlayerDodging) {
 
             //Randomly generates enemy attack - defined just below.
             String currentEnemyAttack = randomAttack();
@@ -282,7 +293,7 @@ public class TheBattleBegins {
                 playerHealth -= 10;
                 isPlayerBleeding = true;
             }
-
+        //Skip enemy's turn if player used Block (Swordsman) or Dodge (Archer) on the last turn.
         }
 
         //Damage enemy if bleeding (swordsman), poisoned (archer), or on fire (mage).
@@ -293,8 +304,7 @@ public class TheBattleBegins {
             System.out.println("The bandit is bleeding and takes 2pt bleeding damage.");
             enemyHealth -= 2;
 
-        //Enemy's turn is skipped if on fire (Mage: Spell: Fireball) or blinded (Swordsman: Smoke Bomb: Inventory) but reset
-        //at the end of skipped turn.
+        //Enemy's turn skip conditions explained to user and reset (each of the 4 cases result in 1 skipped enemy turn).
         } else if (isEnemyOnFire) {
             System.out.println("The bandit is on fire and takes 5 pts fire damage. He takes his turn to put himself out");
             enemyHealth -= 5;
@@ -302,6 +312,14 @@ public class TheBattleBegins {
         } else if (isEnemyBlinded) {
             System.out.println(">The bandit is blinded and cannot attack");
             isEnemyBlinded = false;
+        } else if (isPlayerBlocking) {
+            System.out.println("The bandit swings his sword at you, but you catch it with the broad side of your\n" +
+                    "blade, redirecting it away from your body.");
+            isPlayerBlocking = false;
+        } else if (isPlayerDodging) {
+            System.out.println("The bandit thrusts his sword towards your stomach, but at the last moment you glide\n" +
+                    "out of harms way.");
+            isPlayerDodging = false;
         }
     }
 
@@ -444,6 +462,10 @@ public class TheBattleBegins {
                 System.out.println(">You heal yourself 25 pts.");
                 playerHealth += 25;
                 playerMana -= 10;
+                if (isPlayerBleeding) {
+                    System.out.println("You are no longer bleeding.");
+                    isPlayerBleeding = false;
+                }
                 return;
             }
         } else {
@@ -462,6 +484,10 @@ public class TheBattleBegins {
             enemyHealth -= 10;
             isEnemyBleeding = true;
             return;
+        } else if (command.equalsIgnoreCase("Block")); {
+            System.out.println(">You take a defensive stance.");
+            isPlayerBlocking = true;
+            return;
         }
     }
 
@@ -473,9 +499,13 @@ public class TheBattleBegins {
             return;
         } else if (command.equalsIgnoreCase("Poison Arrow")) {
             System.out.println(">You draw your bow with a poison-tipped arrow and loose it with great precision. It slices\n" +
-                    "the small amount of the bandit's exposed skin taking 12 pts damage. He is poisoned.");
+                    "the small amount of the bandit's exposed skin inflicting 12 pts damage. He is poisoned.");
             enemyHealth -= 12;
             isEnemyPoisoned = true;
+            return;
+        } else if (isPlayerDodging) {
+            System.out.println(">Your senses are heightened and you become light on your feet.");
+            isPlayerDodging = true;
             return;
         }
 
