@@ -1,8 +1,6 @@
 import java.util.*;
 
 public class TheBattleBegins {
-    public static String command;
-
     //Enemy stats
     public static int enemyHealth = 100;
     public static boolean isEnemyOnFire;
@@ -24,6 +22,7 @@ public class TheBattleBegins {
     public static boolean isPlayerDodging;
     public static boolean isGlobalCommandUsed;
 
+
     //Initialize character classes
     public static CharacterClass currentClass;
     public static ArcherClass archer = new ArcherClass();
@@ -32,6 +31,7 @@ public class TheBattleBegins {
 
     //Housekeeping
     public static Scanner input = new Scanner(System.in);
+    public static String command;
     public static String globalCommands = "" +
             "commands: show this command list\n" +
             "inventory: display inventory\n" +
@@ -45,6 +45,7 @@ public class TheBattleBegins {
     public static final String BLUE_ANSI_CODE = "\u001B[36m";
     public static final String RED_ANSI_CODE = "\u001B[31m";
     public static final String ANSI_RESET_CODE = "\u001B[0m";
+    public static final String GREEN_ANSI_CODE = "\u001B[42m";
 
 
     public static void main(String[] args){
@@ -104,7 +105,7 @@ public class TheBattleBegins {
 
         } else {
             System.out.println(">Something went wrong when assigning or when evaluating class");
-            System.out.println("Goobye!");
+            System.out.println("Goodbye!");
             return;
         }
         System.out.println("Starting Health: " + playerHealth);
@@ -272,7 +273,7 @@ public class TheBattleBegins {
     //Waits for user to press enter before proceeding, to allow time for reading.
     public static void waitForUser() {
         System.out.println();
-        System.out.println(RED_ANSI_CODE + "When you are ready to proceed, hit enter." + ANSI_RESET_CODE);
+        System.out.println(BLUE_ANSI_CODE + "When you are ready to proceed, hit enter." + ANSI_RESET_CODE);
         String proceed = input.nextLine();
     }
 
@@ -286,10 +287,10 @@ public class TheBattleBegins {
             //Randomly generates enemy attack - defined just below.
             String currentEnemyAttack = randomAttack();
             if (currentEnemyAttack.equals("Slash")) {
-                System.out.println(">The bandit slashes at you with his sword. You take 15 points damage.");
+                System.out.println(">The bandit slashes at you with his sword. " + RED_ANSI_CODE + "You take 15 points damage." + ANSI_RESET_CODE);
                 playerHealth -= 15;
             } else if (currentEnemyAttack.equals("Stab")) {
-                System.out.println(">The bandit stabs you with his sword. You take 10 points damage. You are bleeding.");
+                System.out.println(">The bandit stabs you with his sword. " + RED_ANSI_CODE +"You take 10 points damage. You are bleeding." + ANSI_RESET_CODE);
                 playerHealth -= 10;
                 isPlayerBleeding = true;
             }
@@ -416,14 +417,14 @@ public class TheBattleBegins {
 
                 playerHealth += 20;
 
-                System.out.println("You drink a health potion and regain 20 health");
+                System.out.println(GREEN_ANSI_CODE + "You drink a health potion and regain 20 health" + ANSI_RESET_CODE);
 
             } else if (useItem.equals("Mana Potion")) {
                 playerInventory.put(useItem, numberOfUseItems-1);
 
                 playerMana += 30;
 
-                System.out.println("You drink a mana potion and regain 30 mana");
+                System.out.println(BLUE_ANSI_CODE + "You drink a mana potion and regain 30 mana" + ANSI_RESET_CODE);
 
             } else if (useItem.equals("Smoke Bomb")) {
                 playerInventory.put(useItem, numberOfUseItems - 1);
@@ -459,7 +460,7 @@ public class TheBattleBegins {
                 playerMana -= 15;
                 return;
             } else if (command.equalsIgnoreCase("Heal")) {
-                System.out.println(">You heal yourself 25 pts.");
+                System.out.println(GREEN_ANSI_CODE + ">You heal yourself 25 pts." + ANSI_RESET_CODE);
                 playerHealth += 25;
                 playerMana -= 10;
                 if (isPlayerBleeding) {
