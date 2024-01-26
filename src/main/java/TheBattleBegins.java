@@ -47,7 +47,7 @@ public class TheBattleBegins {
     public static final String BLUE_ANSI_CODE = "\u001B[36m";
     public static final String RED_ANSI_CODE = "\u001B[31m";
     public static final String ANSI_RESET_CODE = "\u001B[0m";
-    public static final String GREEN_ANSI_CODE = "\u001B[42m";
+    public static final String GREEN_ANSI_CODE = "\u001B[32m";
 
 
     //Main method
@@ -89,30 +89,7 @@ public class TheBattleBegins {
         System.out.println("====================================");
         System.out.println(playerClass);
         System.out.println(separator);
-
-
-
-        //Inform user about class specific info.
-        if (playerClass.equals("Mage")) {
-            System.out.println(">Description: Each spell the Mage casts will cost Mana. You can check how much mana you \n" +
-                    "have at any time using the 'status' command.");
-            System.out.println();
-            System.out.println("Starting Mana: " + playerMana);
-
-        } else if (playerClass.equals("Swordsman")) {
-            System.out.println(">Description: Swing sword. Enemy says 'Ouch!'. Pretty simple.");
-            System.out.println();
-
-        } else if (playerClass.equals("Archer")) {
-            System.out.println(">Description: You only have a certain number of each type of arrow. You can check how \n" +
-                    "many arrows you have at any time using the 'inventory' command.");
-            System.out.println();
-
-        } else {
-            System.out.println(">Something went wrong when assigning or when evaluating class");
-            System.out.println("Goodbye!");
-            return;
-        }
+        System.out.println(playerClassDescription);
         System.out.println("Starting Health: " + playerHealth);
 
         //This function waits for the user to hit enter before proceeding so they have time to read outputs. Defined below.
@@ -135,7 +112,7 @@ public class TheBattleBegins {
         System.out.println(">You are traveling through the woods on your way into town. You notice a cart crashed on the \n" +
                 "side of the road. As you approach, you hear someone shouting for help from inside the cart.");
         System.out.println("Do you:");
-        System.out.println("1. Approach the cart");
+        System.out.println("1. Investigate the cart");
         System.out.println("2. Mind your business");
         System.out.println(">");
 
@@ -156,12 +133,12 @@ public class TheBattleBegins {
         waitForUser();
 
 
-        System.out.println("                   \n" +
+        System.out.println(RED_ANSI_CODE + "                   \n" +
                 "..=====..|...===...|...|..=====..\n" +
                 "..|......|../...\\..|...|....|....\n" +
                 "..|====..|..|......|===|....|....\n" +
                 "..|......|..|...==.|...|....|....\n" +
-                "..|......|..\\===/..|...|....|....");
+                "..|......|..\\===/..|...|....|...." + ANSI_RESET_CODE);
         System.out.println();
 
 
@@ -235,7 +212,7 @@ public class TheBattleBegins {
             System.out.println("The bandit runs his sword through your chest. You fall to the ground, the last thing you\n" +
                     " see is the bandit going through your things and escaping.");
             System.out.println();
-            System.out.println("YOU LOSE");
+            System.out.println(RED_ANSI_CODE + "YOU LOSE" + ANSI_RESET_CODE);
             return;
 
         //Finishing attack if player wins (enemy health < 0), depends on character class.
@@ -256,6 +233,8 @@ public class TheBattleBegins {
             }
         }
 
+        waitForUser();
+
         //Winning ending
         System.out.println();
         System.out.println(">You leave the bandit to his fate and make your way into town and you notice wanted signs\n" +
@@ -263,7 +242,7 @@ public class TheBattleBegins {
                 "the local lord and are rewarded generously. From his list of crimes, it is safe to say you rid the \n" +
                 "world of a great evil.");
         System.out.println();
-        System.out.println("YOU WIN!!!");
+        System.out.println(GREEN_ANSI_CODE + "YOU WIN!!!" + ANSI_RESET_CODE);
 
 
     }
