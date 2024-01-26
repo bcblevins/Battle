@@ -1,7 +1,6 @@
 import java.util.*;
 
 public class TheBattleBegins {
-    public static String command;
 
     //Enemy stats
     public static int enemyHealth = 100;
@@ -9,12 +8,12 @@ public class TheBattleBegins {
     public static boolean isEnemyBleeding;
     public static boolean isEnemyPoisoned;
     public static boolean isEnemyBlinded;
-    public static boolean isSkipTurn;
 
 
     //Player Stats
     public static int playerHealth;
     public static String playerClass;
+    public static String playerClassDescription;
     public static Map<String, Integer> playerSpells;
     public static Set<String> playerAttacks;
     public static Map<String, Integer> playerInventory;
@@ -24,14 +23,17 @@ public class TheBattleBegins {
     public static boolean isPlayerDodging;
     public static boolean isGlobalCommandUsed;
 
+
     //Initialize character classes
     public static CharacterClass currentClass;
     public static ArcherClass archer = new ArcherClass();
     public static SwordClass swordsman = new SwordClass();
     public static MageClass mage = new MageClass();
 
+
     //Housekeeping
     public static Scanner input = new Scanner(System.in);
+    public static String command;
     public static String globalCommands = "" +
             "commands: show this command list\n" +
             "inventory: display inventory\n" +
@@ -47,6 +49,7 @@ public class TheBattleBegins {
     public static final String ANSI_RESET_CODE = "\u001B[0m";
 
 
+    //Main method
     public static void main(String[] args){
         System.out.println("Please select a character class:");
         System.out.println("1. Mage");
@@ -75,38 +78,17 @@ public class TheBattleBegins {
         //Gets class's specific starting info and updates local variables
         playerHealth = currentClass.StartingHealth;
         playerClass = currentClass.Name;
+        playerClassDescription = currentClass.Description;
         playerSpells = currentClass.SpellList;
         playerAttacks = currentClass.AttackList;
         playerMana = currentClass.Mana;
         playerInventory = currentClass.Inventory;
 
-        //Output current class.
+        //Output current class and class-specific info.
         System.out.println("====================================");
         System.out.println(playerClass);
         System.out.println(separator);
-
-
-        //Inform user about class specific info.
-        if (playerClass.equals("Mage")) {
-            System.out.println(">Description: Each spell the Mage casts will cost Mana. You can check how much mana you \n" +
-                    "have at any time using the 'status' command.");
-            System.out.println();
-            System.out.println("Starting Mana: " + playerMana);
-
-        } else if (playerClass.equals("Swordsman")) {
-            System.out.println(">Description: Swing sword. Enemy says 'Ouch!'. Pretty simple.");
-            System.out.println();
-
-        } else if (playerClass.equals("Archer")) {
-            System.out.println(">Description: You only have a certain number of each type of arrow. You can check how \n" +
-                    "many arrows you have at any time using the 'inventory' command.");
-            System.out.println();
-
-        } else {
-            System.out.println(">Something went wrong when assigning or when evaluating class");
-            System.out.println("Goobye!");
-            return;
-        }
+        System.out.println(playerClassDescription);
         System.out.println("Starting Health: " + playerHealth);
 
         //This function waits for the user to hit enter before proceeding so they have time to read outputs. Defined below.

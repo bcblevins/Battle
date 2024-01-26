@@ -2,6 +2,7 @@ import java.util.*;
 
 public class CharacterClass {
         public String Name;
+        public String Description;
         public int StartingHealth;
         public int Mana;
         public Set<String> AttackList = new HashSet<>();
