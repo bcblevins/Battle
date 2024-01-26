@@ -47,6 +47,7 @@ public class TheBattleBegins {
     public static final String BLUE_ANSI_CODE = "\u001B[36m";
     public static final String RED_ANSI_CODE = "\u001B[31m";
     public static final String ANSI_RESET_CODE = "\u001B[0m";
+    public static final String GREEN_ANSI_CODE = "\u001B[42m";
 
 
     //Main method
@@ -88,7 +89,30 @@ public class TheBattleBegins {
         System.out.println("====================================");
         System.out.println(playerClass);
         System.out.println(separator);
-        System.out.println(playerClassDescription);
+
+
+
+        //Inform user about class specific info.
+        if (playerClass.equals("Mage")) {
+            System.out.println(">Description: Each spell the Mage casts will cost Mana. You can check how much mana you \n" +
+                    "have at any time using the 'status' command.");
+            System.out.println();
+            System.out.println("Starting Mana: " + playerMana);
+
+        } else if (playerClass.equals("Swordsman")) {
+            System.out.println(">Description: Swing sword. Enemy says 'Ouch!'. Pretty simple.");
+            System.out.println();
+
+        } else if (playerClass.equals("Archer")) {
+            System.out.println(">Description: You only have a certain number of each type of arrow. You can check how \n" +
+                    "many arrows you have at any time using the 'inventory' command.");
+            System.out.println();
+
+        } else {
+            System.out.println(">Something went wrong when assigning or when evaluating class");
+            System.out.println("Goodbye!");
+            return;
+        }
         System.out.println("Starting Health: " + playerHealth);
 
         //This function waits for the user to hit enter before proceeding so they have time to read outputs. Defined below.
@@ -254,7 +278,7 @@ public class TheBattleBegins {
     //Waits for user to press enter before proceeding, to allow time for reading.
     public static void waitForUser() {
         System.out.println();
-        System.out.println(RED_ANSI_CODE + "When you are ready to proceed, hit enter." + ANSI_RESET_CODE);
+        System.out.println(BLUE_ANSI_CODE + "When you are ready to proceed, hit enter." + ANSI_RESET_CODE);
         String proceed = input.nextLine();
     }
 
@@ -268,10 +292,10 @@ public class TheBattleBegins {
             //Randomly generates enemy attack - defined just below.
             String currentEnemyAttack = randomAttack();
             if (currentEnemyAttack.equals("Slash")) {
-                System.out.println(">The bandit slashes at you with his sword. You take 15 points damage.");
+                System.out.println(">The bandit slashes at you with his sword. " + RED_ANSI_CODE + "You take 15 points damage." + ANSI_RESET_CODE);
                 playerHealth -= 15;
             } else if (currentEnemyAttack.equals("Stab")) {
-                System.out.println(">The bandit stabs you with his sword. You take 10 points damage. You are bleeding.");
+                System.out.println(">The bandit stabs you with his sword. " + RED_ANSI_CODE +"You take 10 points damage. You are bleeding." + ANSI_RESET_CODE);
                 playerHealth -= 10;
                 isPlayerBleeding = true;
             }
@@ -398,14 +422,14 @@ public class TheBattleBegins {
 
                 playerHealth += 20;
 
-                System.out.println("You drink a health potion and regain 20 health");
+                System.out.println(GREEN_ANSI_CODE + "You drink a health potion and regain 20 health" + ANSI_RESET_CODE);
 
             } else if (useItem.equals("Mana Potion")) {
                 playerInventory.put(useItem, numberOfUseItems-1);
 
                 playerMana += 30;
 
-                System.out.println("You drink a mana potion and regain 30 mana");
+                System.out.println(BLUE_ANSI_CODE + "You drink a mana potion and regain 30 mana" + ANSI_RESET_CODE);
 
             } else if (useItem.equals("Smoke Bomb")) {
                 playerInventory.put(useItem, numberOfUseItems - 1);
@@ -441,7 +465,7 @@ public class TheBattleBegins {
                 playerMana -= 15;
                 return;
             } else if (command.equalsIgnoreCase("Heal")) {
-                System.out.println(">You heal yourself 25 pts.");
+                System.out.println(GREEN_ANSI_CODE + ">You heal yourself 25 pts." + ANSI_RESET_CODE);
                 playerHealth += 25;
                 playerMana -= 10;
                 if (isPlayerBleeding) {
