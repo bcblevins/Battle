@@ -46,8 +46,8 @@ public class TheBattleBegins {
             "------------------------------------";
     public static final String BLUE_ANSI_CODE = "\u001B[36m";
     public static final String RED_ANSI_CODE = "\u001B[31m";
-    public static final String ANSI_RESET_CODE = "\u001B[0m";
     public static final String GREEN_ANSI_CODE = "\u001B[32m";
+    public static final String ANSI_RESET_CODE = "\u001B[0m";
 
 
     //Main method
@@ -178,7 +178,7 @@ public class TheBattleBegins {
                 System.out.println();
             }
 
-            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
             //Take user command and see if they used a global command first (since global command does not count as turn)
@@ -195,16 +195,11 @@ public class TheBattleBegins {
                 } else if (playerClass.equals("Archer")) {
                     processArcherCommands();
                 }
-            }
-
-            //Only wait for user if a turn (non-global) command is used, so they can read about what their turn did before proceeding.
-            if (!isGlobalCommandUsed) {
                 waitForUser();
             }
 
         //This loop will repeat as long as user and enemy healths are above zero.
         }
-
 
 
         //Ending if player loses (health < 0)
@@ -235,7 +230,7 @@ public class TheBattleBegins {
 
         waitForUser();
 
-        //Winning ending
+        //Winning ending for all classes
         System.out.println();
         System.out.println(">You leave the bandit to his fate and make your way into town and you notice wanted signs\n" +
                 "posted everywhere. Looks like there was a bounty on the bandit's head. You bring proof of his demise to\n" +
