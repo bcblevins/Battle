@@ -91,6 +91,9 @@ public class TheBattleBegins {
         System.out.println(separator);
         System.out.println(playerClassDescription);
         System.out.println("Starting Health: " + playerHealth);
+        if (playerClass.equals("Mage")) {
+            System.out.println("Starting Mana: " + playerMana);
+        }
 
         //This function waits for the user to hit enter before proceeding so they have time to read outputs. Defined below.
         waitForUser();
