@@ -435,12 +435,12 @@ public class TheBattleBegins {
                 enemyHealth -= 5;
                 isEnemyOnFire = true;
                 playerMana -= 15;
-                return;
+
             } else if (command.equalsIgnoreCase("Shock")) {
                 System.out.println(">Bolts of electricity escape your fingertips and strike the bandit. He takes 18pts damage.");
                 enemyHealth -= 18;
                 playerMana -= 15;
-                return;
+
             } else if (command.equalsIgnoreCase("Heal")) {
                 System.out.println(GREEN_ANSI_CODE + ">You heal yourself 25 pts." + ANSI_RESET_CODE);
                 playerHealth += 25;
@@ -449,7 +449,7 @@ public class TheBattleBegins {
                     System.out.println("You are no longer bleeding.");
                     isPlayerBleeding = false;
                 }
-                return;
+
             }
         } else {
             System.out.println("You are out of mana.");
@@ -461,16 +461,16 @@ public class TheBattleBegins {
             System.out.println(">Your sword glides through the air and strikes the bandit across the chest.\n" +
                     "he takes 15 pts damage.");
             enemyHealth -= 15;
-            return;
+
         } else if (command.equalsIgnoreCase("Stab")) {
             System.out.println(">You quickly jab your sword at the bandit's stomach. He takes 10 pts damage. He is bleeding.");
             enemyHealth -= 10;
             isEnemyBleeding = true;
-            return;
+
         } else if (command.equalsIgnoreCase("Block")); {
             System.out.println(">You take a defensive stance.");
             isPlayerBlocking = true;
-            return;
+
         }
     }
 
@@ -479,17 +479,17 @@ public class TheBattleBegins {
             System.out.println(">You draw your bow with a normal arrow and loose it with great speed. It strikes the bandit\n" +
                     "in the chest, slightly penetrating his armor. He takes 18 pts damage.");
             enemyHealth -= 18;
-            return;
+
         } else if (command.equalsIgnoreCase("Poison Arrow")) {
             System.out.println(">You draw your bow with a poison-tipped arrow and loose it with great precision. It slices\n" +
                     "the small amount of the bandit's exposed skin inflicting 12 pts damage. He is poisoned.");
             enemyHealth -= 12;
             isEnemyPoisoned = true;
-            return;
-        } else if (isPlayerDodging) {
+
+        } else if (command.equalsIgnoreCase("Dodge")) {
             System.out.println(">Your senses are heightened and you become light on your feet.");
             isPlayerDodging = true;
-            return;
+
         }
 
     }
